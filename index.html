@@ -16,28 +16,67 @@
     <script>
         const tickers = ['TSLA', 'NVO', 'NVDA'];
 
-        tickers.forEach(ticker => {
-            fetch(`data/stocks_data_${ticker}.json`)
-                .then(response => response.json())
-                .then(data => {
-                    const dates = data.map(d => d.date);
-                    const prices = data.map(d => d.close);
+        function fetchDataAndPlot() {
+            tickers.forEach(ticker => {
+                fetch(`data/stocks_data_${ticker}.json`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const dates = data.map(d => d.date);
+                        const prices = data.map(d => d.close);
+                        const dailyChanges = data.map(d => d.daily_change);
+                        const movingAvg20 = data.map(d => d.moving_avg_20);
+                        const movingAvg50 = data.map(d => d.moving_avg_50);
 
-                    const trace = {
-                        x: dates,
-                        y: prices,
-                        type: 'scatter'
-                    };
+                        const tracePrice = {
+                            x: dates,
+                            y: prices,
+                            type: 'scatter',
+                            name: 'Price'
+                        };
 
-                    const layout = {
-                        title: `${ticker} Stock Prices`,
-                        xaxis: { title: 'Date' },
-                        yaxis: { title: 'Price (USD)' }
-                    };
+                        const traceDailyChange = {
+                            x: dates,
+                            y: dailyChanges,
+                            type: 'bar',
+                            name: 'Daily % Change',
+                            yaxis: 'y2'
+                        };
 
-                    Plotly.newPlot(`${ticker}_chart`, [trace], layout);
-                });
-        });
+                        const traceMA20 = {
+                            x: dates,
+                            y: movingAvg20,
+                            type: 'scatter',
+                            name: '20-Day MA'
+                        };
+
+                        const traceMA50 = {
+                            x: dates,
+                            y: movingAvg50,
+                            type: 'scatter',
+                            name: '50-Day MA'
+                        };
+
+                        const layout = {
+                            title: `${ticker} Stock Prices and Statistics`,
+                            xaxis: { title: 'Date' },
+                            yaxis: { title: 'Price (USD)' },
+                            yaxis2: {
+                                title: 'Daily % Change',
+                                overlaying: 'y',
+                                side: 'right'
+                            }
+                        };
+
+                        Plotly.newPlot(`${ticker}_chart`, [tracePrice, traceDailyChange, traceMA20, traceMA50], layout);
+                    });
+            });
+        }
+
+        // Initial data fetch and plot
+        fetchDataAndPlot();
+
+        // Refresh every 5 minutes
+        setInterval(fetchDataAndPlot, 300000);
     </script>
 </body>
 </html>
