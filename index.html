@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <h1>Portfolio Dashboard</h1>
+
+    <div id="TSLA_chart"></div>
+    <div id="NVO_chart"></div>
+    <div id="NVDA_chart"></div>
+
+    <script>
+        const tickers = ['TSLA', 'NVO', 'NVDA'];
+
+        tickers.forEach(ticker => {
+            fetch(`data/stocks_data_${ticker}.json`)
+                .then(response => response.json())
+                .then(data => {
+                    const dates = data.map(d => d.date);
+                    const prices = data.map(d => d.close);
+
+                    const trace = {
+                        x: dates,
+                        y: prices,
+                        type: 'scatter'
+                    };
+
+                    const layout = {
+                        title: `${ticker} Stock Prices`,
+                        xaxis: { title: 'Date' },
+                        yaxis: { title: 'Price (USD)' }
+                    };
+
+                    Plotly.newPlot(`${ticker}_chart`, [trace], layout);
+                });
+        });
+    </script>
+</body>
+</html>
