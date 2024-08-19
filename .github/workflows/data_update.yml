@@ -35,6 +35,6 @@ jobs:
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "GitHub Actions"
-        git diff --quiet && git diff --staged --quiet || git add data/stocks_data.db data/*.json
+        git add data/stocks_data.db data/*.json
         git commit -m "Update SQLite database and JSON files with latest stock data" || echo "No changes to commit"
         git push
